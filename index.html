@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Friend Finder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body data-theme="warm">
+  <header class="topbar">
+    <a class="brand" href="#"><span class="brand-mark">◎</span> Friend Finder</a>
+    <div class="theme-switch">
+      <span>Colour:</span>
+      <button class="theme-btn active" data-theme-choice="warm">Warm</button>
+      <button class="theme-btn" data-theme-choice="white">White</button>
+    </div>
+  </header>
+
+  <main class="page">
+    <section class="intro">
+      <p class="eyebrow">A GRAPH-BASED SOCIAL NETWORK PROJECT</p>
+      <h1>See how people are <span>connected.</span></h1>
+      <p class="subtitle">Add a few people, make them friends, and explore the connections in your network.</p>
+    </section>
+
+    <section class="workspace">
+      <section class="network-panel panel">
+        <div class="section-heading">
+          <div><p class="eyebrow">VISUAL EXPLORER</p><h2>Your network</h2></div>
+          <div class="heading-actions">
+            <button class="button button-light" id="demoBtn">Try an example</button>
+            <button class="button button-quiet" id="resetBtn">Start over</button>
+          </div>
+        </div>
+        <div class="graph-wrap" id="graphWrap">
+          <svg id="networkSvg" viewBox="0 0 760 470" role="img" aria-label="Social network graph">
+            <g id="edges"></g><g id="nodes"></g>
+          </svg>
+          <div class="empty-state" id="emptyState">
+            <div class="empty-icon">✳</div>
+            <h3>No one here yet</h3>
+            <p>Add a person on the right, or start with a ready-made example.</p>
+            <button class="button button-primary" id="emptyDemoBtn">Load the example</button>
+          </div>
+        </div>
+        <div class="legend">
+          <span><i class="dot route"></i> Shortest route</span>
+          <span><i class="dot visited"></i> Visited</span>
+          <span><i class="dot common"></i> Friends in common / suggested</span>
+          <span><i class="dot selected"></i> Chosen people</span>
+        </div>
+        <div class="adjacency">
+          <div class="section-heading compact"><div><p class="eyebrow">UNDER THE HOOD</p><h3>See how the network is stored</h3></div></div>
+          <p class="muted">Each person is listed with their friends. This is called an <strong>adjacency list</strong>.</p>
+          <pre id="adjacencyList">Add people to see the adjacency list.</pre>
+        </div>
+      </section>
+
+      <aside class="controls">
+        <section class="panel control-panel">
+          <div class="step-title"><span class="step">1</span><div><h3>Add people</h3><p>Type a name and press Add.</p></div></div>
+          <form id="addUserForm" class="inline-form">
+            <input id="nameInput" type="text" maxlength="24" placeholder="e.g. Priya" autocomplete="off" />
+            <button class="button button-primary" type="submit">Add</button>
+          </form>
+          <p class="feedback" id="userFeedback" aria-live="polite"></p>
+        </section>
+
+        <section class="panel control-panel">
+          <div class="step-title"><span class="step">2</span><div><h3>Make friends</h3><p>Pick two people to connect.</p></div></div>
+          <div class="field-row">
+            <select id="friendA" aria-label="First person"><option value="">First person</option></select>
+            <select id="friendB" aria-label="Second person"><option value="">Second person</option></select>
+          </div>
+          <button class="button button-primary full" id="connectBtn">Make them friends</button>
+          <p class="feedback" id="connectionFeedback" aria-live="polite"></p>
+        </section>
+
+        <section class="panel control-panel explore-panel">
+          <div class="step-title"><span class="step">3</span><div><h3>Explore</h3><p>Choose a question to ask the network.</p></div></div>
+          <div class="tab-row">
+            <button class="tab active" data-tab="mutual">Friends in common</button>
+            <button class="tab" data-tab="path">How connected?</button>
+            <button class="tab" data-tab="suggest">Who might they know?</button>
+            <button class="tab" data-tab="traverse">Visit everyone</button>
+          </div>
+          <div class="tab-content" id="mutualTab">
+            <div class="field-row"><select id="mutualA"><option value="">Person one</option></select><select id="mutualB"><option value="">Person two</option></select></div>
+            <button class="button button-dark full" id="mutualBtn">Find friends in common</button>
+          </div>
+          <div class="tab-content hidden" id="pathTab">
+            <div class="field-row"><select id="pathA"><option value="">From</option></select><select id="pathB"><option value="">To</option></select></div>
+            <button class="button button-dark full" id="pathBtn">Find the shortest route</button>
+          </div>
+          <div class="tab-content hidden" id="suggestTab">
+            <select id="suggestPerson"><option value="">Choose a person</option></select>
+            <button class="button button-dark full" id="suggestBtn">Suggest new friends</button>
+          </div>
+          <div class="tab-content hidden" id="traverseTab">
+            <select id="traversePerson"><option value="">Choose a starting person</option></select>
+            <div class="button-pair"><button class="button button-dark" id="bfsBtn">Nearest first (BFS)</button><button class="button button-dark" id="dfsBtn">Go deep first (DFS)</button></div>
+          </div>
+          <div class="result-box" id="resultBox" aria-live="polite">Pick people above, then press a button.</div>
+        </section>
+      </aside>
+    </section>
+
+    <section class="how-section">
+      <p class="eyebrow">THE DATA STRUCTURE BEHIND THE APP</p>
+      <h2>How it works</h2>
+      <div class="info-grid">
+        <article class="info-card"><div class="info-icon">◉</div><h3>A network is a graph</h3><p>People are represented as vertices (dots), and friendships are edges (lines). Since friendship is mutual, this is an undirected graph.</p></article>
+        <article class="info-card"><div class="info-icon">↗</div><h3>Nearest first (BFS)</h3><p>Breadth-First Search explores nearby friends first. It finds the shortest path in an unweighted network.</p></article>
+        <article class="info-card"><div class="info-icon">⌁</div><h3>Go deep first (DFS)</h3><p>Depth-First Search follows one connection as far as possible before backtracking to explore another.</p></article>
+        <article class="info-card"><div class="info-icon">⟷</div><h3>Common friends</h3><p>Compare two friend lists and keep the names that appear in both. Friends-of-friends can become suggestions.</p></article>
+      </div>
+      <details class="complexity">
+        <summary>For the curious: speed of each feature</summary>
+        <div class="table-scroll"><table><thead><tr><th>Feature</th><th>Method</th><th>Time complexity</th></tr></thead><tbody>
+          <tr><td>Add person or friendship</td><td>Map and set insertion</td><td>O(log V)</td></tr>
+          <tr><td>Friends in common</td><td>Set intersection</td><td>O(d₁ + d₂)</td></tr>
+          <tr><td>Shortest route</td><td>BFS</td><td>O(V + E)</td></tr>
+          <tr><td>Suggestions</td><td>Friends of friends</td><td>O(d² log V)</td></tr>
+          <tr><td>Visit everyone</td><td>BFS or DFS</td><td>O(V + E)</td></tr>
+        </tbody></table></div>
+        <p class="muted small">V = number of people, E = number of friendships, d = number of friends of a person.</p>
+      </details>
+    </section>
+    <footer>Friend Finder <span>·</span> Built to explore graphs, BFS and DFS</footer>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
